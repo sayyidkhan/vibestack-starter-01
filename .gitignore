@@ -31,3 +31,4 @@ local.db
 test-results/
 playwright-report/
 .vercel
+server-dist/

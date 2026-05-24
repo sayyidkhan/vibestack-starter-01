@@ -345,8 +345,17 @@ export function createApiApp() {
   return app
 }
 
+let bootPromise: Promise<void> | null = null
+
+export async function ensureApiBootstrapped() {
+  if (!bootPromise) {
+    bootPromise = bootstrapDatabase()
+  }
+  await bootPromise
+}
+
 export async function startApiServer() {
-  await bootstrapDatabase()
+  await ensureApiBootstrapped()
   createApiApp().listen(port, () => {
     console.log(`API server running on http://127.0.0.1:${port}`)
   })
