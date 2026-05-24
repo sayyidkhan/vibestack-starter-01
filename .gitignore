@@ -30,3 +30,4 @@ dist-ssr
 local.db
 test-results/
 playwright-report/
+.vercel
