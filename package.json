@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run dev:full",
     "build": "npm run build:server && tsc -b && vite build",
     "build:server": "esbuild server/app.ts --bundle --platform=node --format=cjs --target=node20 --outfile=server-dist/app.cjs",
     "lint": "eslint .",
@@ -16,7 +16,7 @@
     "db:seed": "tsx db/seed.ts",
     "test:e2e": "playwright test",
     "api:dev": "tsx server/index.ts",
-    "dev:full": "concurrently \"npm run api:dev\" \"npm run dev\""
+    "dev:full": "npm run build:server && vercel dev --listen 5174"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.98.0",

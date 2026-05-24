@@ -5,33 +5,27 @@ export function AdminPage() {
   return (
     <section className="grid">
       <Card tone="spotlight">
-        <SectionHeader eyebrow="Admin Surface" title="Control growth, risk, and reliability in one place." />
-        <p className="muted">Everything here maps to an operator lever: users, settings, visibility, and governance logs.</p>
+        <SectionHeader eyebrow="Admin Section" title="Governance and Control Center" />
+        <p className="muted">Manage access, risk, rollout safety, and operational observability in one place.</p>
       </Card>
+
       <section className="grid three">
         <Card className="admin-tile">
           <h3>Users</h3>
-          <p className="muted">Inspect accounts and adjust roles safely.</p>
-          <Link to="/admin/users"><Button>Open</Button></Link>
-        </Card>
-        <Card className="admin-tile">
-          <h3>Audit Logs</h3>
-          <p className="muted">Track security-sensitive and operational actions.</p>
-          <Link to="/admin/audit-logs"><Button tone="secondary">Open</Button></Link>
+          <p className="muted">Role changes and access management.</p>
+          <Link to="/admin/users"><Button>Open Users</Button></Link>
         </Card>
         <Card className="admin-tile">
           <h3>Settings</h3>
-          <p className="muted">Manage feature switches and policy flags.</p>
-          <Link to="/admin/settings"><Button tone="secondary">Open</Button></Link>
+          <p className="muted">System controls and feature switches.</p>
+          <Link to="/admin/settings"><Button tone="secondary">Open Settings</Button></Link>
+        </Card>
+        <Card className="admin-tile">
+          <h3>Audit Logs</h3>
+          <p className="muted">Trace privileged and sensitive operations.</p>
+          <Link to="/admin/audit-logs"><Button tone="secondary">Open Logs</Button></Link>
         </Card>
       </section>
-      <Card>
-        <h3>Content Ops</h3>
-        <p className="muted">Publish and unpublish sample content to simulate moderation workflows.</p>
-        <div className="row" style={{ marginTop: '.8rem' }}>
-          <Link to="/admin/content"><Button tone="secondary">Manage Content</Button></Link>
-        </div>
-      </Card>
     </section>
   )
 }

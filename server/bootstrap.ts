@@ -41,6 +41,8 @@ export async function bootstrapDatabase() {
 
   await client.execute("UPDATE users SET password_hash = ? WHERE id = 'demo-user'", [hashPassword('user12345')])
   await client.execute("UPDATE users SET password_hash = ? WHERE id = 'demo-admin'", [hashPassword('admin12345')])
+  await client.execute("UPDATE users SET password_hash = ?, role_id = 'role-user' WHERE email = 'user@vibestack.dev'", [hashPassword('user12345')])
+  await client.execute("UPDATE users SET password_hash = ?, role_id = 'role-admin' WHERE email = 'admin@vibestack.dev'", [hashPassword('admin12345')])
 
   await client.execute("INSERT OR IGNORE INTO app_settings (id, key, value) VALUES ('setting-allow-signup','allow_signup','true')")
   await client.execute("INSERT OR IGNORE INTO app_settings (id, key, value) VALUES ('setting-ai-enabled','ai_enabled','true')")

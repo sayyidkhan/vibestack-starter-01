@@ -15,14 +15,11 @@ import { ToastProvider } from './context/toast'
 import { AuthProvider, useAuth } from './lib/auth'
 import { hasRole, isAuthenticated } from './lib/permissions'
 import { AdminAuditLogsPage } from './pages/admin/audit-logs'
-import { AdminContentPage } from './pages/admin/content'
 import { AdminPage } from './pages/admin'
 import { AdminSettingsPage } from './pages/admin/settings'
 import { AdminUsersPage } from './pages/admin/users'
 import { AIAssistantPage } from './pages/ai/assistant'
 import { DashboardPage } from './pages/dashboard'
-import { ItemsPage } from './pages/items'
-import { NotesPage } from './pages/notes'
 import {
   AboutPage,
   ContactPage,
@@ -122,37 +119,17 @@ const settingsRoute = createRoute({
   ),
 })
 
-const itemsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/items',
-  component: () => (
-    <Protected>
-      <FeatureFlagGate flag="EXAMPLE_CRUD">
-        <ItemsPage />
-      </FeatureFlagGate>
-    </Protected>
-  ),
-})
-
-const notesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/notes',
-  component: () => (
-    <Protected>
-      <NotesPage />
-    </Protected>
-  ),
-})
-
 const aiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/ai/assistant',
   component: () => (
-    <Protected>
+    <AdminOnly>
+      <FeatureFlagGate flag="ADMIN_PANEL">
       <FeatureFlagGate flag="AI_ASSISTANT">
         <AIAssistantPage />
       </FeatureFlagGate>
-    </Protected>
+      </FeatureFlagGate>
+    </AdminOnly>
   ),
 })
 
@@ -206,20 +183,6 @@ const adminSettingsRoute = createRoute({
   ),
 })
 
-const adminContentRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/admin/content',
-  component: () => (
-    <AdminOnly>
-      <FeatureFlagGate flag="ADMIN_PANEL">
-        <FeatureFlagGate flag="EXAMPLE_CRUD">
-          <AdminContentPage />
-        </FeatureFlagGate>
-      </FeatureFlagGate>
-    </AdminOnly>
-  ),
-})
-
 const routeTree = rootRoute.addChildren([
   indexRoute,
   pricingRoute,
@@ -233,14 +196,11 @@ const routeTree = rootRoute.addChildren([
   dashboardRoute,
   profileRoute,
   settingsRoute,
-  itemsRoute,
-  notesRoute,
   aiRoute,
   adminRoute,
   adminUsersRoute,
   adminAuditRoute,
   adminSettingsRoute,
-  adminContentRoute,
 ])
 
 export const router = createRouter({ routeTree })

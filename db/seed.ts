@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { createClient } from '@libsql/client'
 import { randomUUID } from 'node:crypto'
+import { scryptSync } from 'node:crypto'
 import { drizzle } from 'drizzle-orm/libsql'
 import { appSettings, exampleItems, featureFlags, roles, users } from './schema'
 
@@ -8,6 +9,12 @@ function requiredEnv(name: 'DATABASE_URL' | 'DATABASE_AUTH_TOKEN') {
   const value = process.env[name]
   if (!value) throw new Error(`Missing ${name}`)
   return value
+}
+
+function hashPassword(password: string) {
+  const salt = 'vibestacksalt'
+  const key = scryptSync(password, salt, 64).toString('hex')
+  return `${salt}:${key}`
 }
 
 export async function seed() {
@@ -28,8 +35,8 @@ export async function seed() {
   ])
 
   await db.insert(users).values([
-    { id: userId, email: 'user@vibestack.dev', name: 'Uma User', roleId: userRoleId },
-    { id: adminId, email: 'admin@vibestack.dev', name: 'Avery Admin', roleId: adminRoleId },
+    { id: userId, email: 'user@vibestack.dev', name: 'Uma User', roleId: userRoleId, passwordHash: hashPassword('user12345') },
+    { id: adminId, email: 'admin@vibestack.dev', name: 'Avery Admin', roleId: adminRoleId, passwordHash: hashPassword('admin12345') },
   ])
 
   await db.insert(featureFlags).values([

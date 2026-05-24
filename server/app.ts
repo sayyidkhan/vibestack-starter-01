@@ -24,12 +24,34 @@ const authRateLimitMax = Number(process.env.AUTH_RATE_LIMIT_MAX || 30)
 const aiRateLimitWindowMs = Number(process.env.AI_RATE_LIMIT_WINDOW_MS || 5 * 60 * 1000)
 const aiRateLimitMax = Number(process.env.AI_RATE_LIMIT_MAX || 50)
 
-const allowedOrigins = new Set([appUrl, vercelUrl, 'http://127.0.0.1:4173', 'http://localhost:4173', 'http://127.0.0.1:5173', 'http://localhost:5173'])
+const allowedOrigins = new Set([appUrl, vercelUrl, 'http://127.0.0.1:4173', 'http://localhost:4173', 'http://127.0.0.1:5173', 'http://localhost:5173', 'http://127.0.0.1:5174', 'http://localhost:5174'])
+
+function withAlternateLoopbackOrigin(origin: string) {
+  try {
+    const url = new URL(origin)
+    if (url.hostname === '127.0.0.1') {
+      url.hostname = 'localhost'
+      return url.toString().replace(/\/$/, '')
+    }
+    if (url.hostname === 'localhost') {
+      url.hostname = '127.0.0.1'
+      return url.toString().replace(/\/$/, '')
+    }
+  } catch {
+    // Ignore parse failures; fallback to original origin.
+  }
+  return origin
+}
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.has(origin) || origin.endsWith('.vercel.app')) return callback(null, true)
+      if (
+        !origin ||
+        allowedOrigins.has(origin) ||
+        allowedOrigins.has(withAlternateLoopbackOrigin(origin)) ||
+        origin.endsWith('.vercel.app')
+      ) return callback(null, true)
       return callback(new Error('Not allowed by CORS'))
     },
     credentials: true,
