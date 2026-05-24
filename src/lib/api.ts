@@ -1,7 +1,7 @@
 import type { ExampleItem } from '../context/app-state'
 import type { AppUser, Role } from './types'
 
-const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8787'
+const baseUrl = import.meta.env.VITE_API_URL || ''
 
 export type AdminUser = {
   id: string

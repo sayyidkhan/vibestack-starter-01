@@ -17,18 +17,19 @@ import { startFunctions } from './start-functions'
 const app = express()
 const port = Number(process.env.API_PORT || 8787)
 const appUrl = process.env.APP_URL || 'http://127.0.0.1:5173'
+const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : ''
 const isProd = process.env.NODE_ENV === 'production'
 const authRateLimitWindowMs = Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000)
 const authRateLimitMax = Number(process.env.AUTH_RATE_LIMIT_MAX || 30)
 const aiRateLimitWindowMs = Number(process.env.AI_RATE_LIMIT_WINDOW_MS || 5 * 60 * 1000)
 const aiRateLimitMax = Number(process.env.AI_RATE_LIMIT_MAX || 50)
 
-const allowedOrigins = new Set([appUrl, 'http://127.0.0.1:4173', 'http://localhost:4173', 'http://127.0.0.1:5173', 'http://localhost:5173'])
+const allowedOrigins = new Set([appUrl, vercelUrl, 'http://127.0.0.1:4173', 'http://localhost:4173', 'http://127.0.0.1:5173', 'http://localhost:5173'])
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.has(origin)) return callback(null, true)
+      if (!origin || allowedOrigins.has(origin) || origin.endsWith('.vercel.app')) return callback(null, true)
       return callback(new Error('Not allowed by CORS'))
     },
     credentials: true,
