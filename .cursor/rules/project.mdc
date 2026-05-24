@@ -1,0 +1,4 @@
+---
+description: Project coding constraints
+---
+Keep feature modules isolated (`pages`, `components`, `lib`, `db`).

@@ -1,0 +1,1 @@
+VibeStack OS is a full-stack starter template with auth, admin, AI-ready module, and docs.

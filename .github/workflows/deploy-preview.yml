@@ -1,0 +1,9 @@
+name: Deploy Preview
+on:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Configure Vercel preview deploy here"

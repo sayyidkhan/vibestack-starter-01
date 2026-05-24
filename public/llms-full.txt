@@ -1,0 +1,2 @@
+VibeStack OS helps builders launch production-ready apps quickly.
+It includes route structure, role guards, responsive shell, and operational docs.

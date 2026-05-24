@@ -1,0 +1,9 @@
+{
+  "name": "VibeStack OS",
+  "short_name": "VibeStack",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f8f6",
+  "theme_color": "#105e45",
+  "icons": []
+}
