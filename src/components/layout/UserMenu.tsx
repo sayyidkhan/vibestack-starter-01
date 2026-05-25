@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Bot, ChevronDown, LogOut, Settings, ShieldCheck, User2 } from 'lucide-react'
+import { ChevronDown, LogOut, Settings, User2 } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { AppUser } from '../../lib/types'
 import { Badge } from '../ui/primitives'
