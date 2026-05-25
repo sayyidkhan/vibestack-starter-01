@@ -1,0 +1,32 @@
+/*
+ * Slidev Goto dialog: the autocomplete list can peek through when "closed"
+ * (list taller than the -top-20 offset). Hide it fully, and park the UI bottom-left.
+ */
+
+/* Closed: no stray slide list on screen */
+#slidev-goto-dialog.-top-20 {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#slidev-goto-dialog.-top-20 .autocomplete-list {
+  display: none !important;
+}
+
+/* Open: bottom-left instead of top-right */
+#slidev-goto-dialog {
+  right: auto !important;
+  left: 1.25rem !important;
+}
+
+#slidev-goto-dialog:not(.-top-20) {
+  top: auto !important;
+  bottom: 1.25rem !important;
+}
+
+#slidev-goto-dialog:not(.-top-20) .autocomplete-list {
+  max-height: min(50vh, 320px);
+  overflow-y: auto;
+}

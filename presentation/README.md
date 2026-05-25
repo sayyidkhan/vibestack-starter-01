@@ -2,6 +2,14 @@
 
 Minimal Slidev deck (8 slides) for teaching vibe coding with the VibeStack starter.
 
+## Live
+
+**https://presentation-vibestack-starter-01.vercel.app**
+
+Template app for demos: **https://vibestack-starter-01.vercel.app/**
+
+---
+
 ## Local
 
 ```bash
@@ -20,20 +28,33 @@ npm run dev
 npm run build
 ```
 
-Output: `presentation/dist/` — deploy this folder.
+Output: `presentation/dist/`
 
-## Deploy on Vercel (recommended)
+## Deploy on Vercel
 
-1. Vercel → **Add New Project** → same GitHub repo
-2. Set **Root Directory** to `presentation`
-3. Framework: Vercel auto-detects from `presentation/vercel.json`
-4. Deploy
+This folder is a **separate** Vercel project (root directory = `presentation`).
 
-You get a separate URL (e.g. `vibestack-slides.vercel.app`) without touching the main app deploy.
+```bash
+vercel --prod
+```
+
+Config: `vercel.json` (build → `dist/`).
 
 ## Edit slides
 
-Open `slides.md` — each `---` starts a new slide. Keep bullets short; add screenshots by dropping images in `presentation/public/` and using:
+Open `slides.md` — each `---` starts a new slide.
+
+### Goto slide list (bottom-left)
+
+Slidev’s built-in **Goto** panel (`g` key) can show a slide list. Custom CSS in `styles/index.css` hides it when closed and moves it to the **bottom-left** so it does not cover slide content.
+
+To remove it entirely, add to `styles/index.css`:
+
+```css
+#slidev-goto-dialog { display: none !important; }
+```
+
+Add images under `public/`:
 
 ```md
 ![alt](/image-name.png)

@@ -2,6 +2,9 @@
 
 Core project docs are grouped here so the repository root stays focused on source, config, and tool-discovery files.
 
+**Live app:** https://vibestack-starter-01.vercel.app/  
+**Workshop slides:** https://presentation-vibestack-starter-01.vercel.app
+
 - [Architecture](./ARCHITECTURE.md)
 - [Guardrails](./GUARDRAILS.md)
 - [Project Vision](./PROJECT_VISION.md)

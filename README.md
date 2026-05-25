@@ -1,90 +1,180 @@
 # VibeStack OS
 
-VibeStack OS is a mobile-responsive full-stack starter template for shipping SaaS and AI products faster, with a strong baseline for auth, admin, docs, and modular architecture.
+Mobile-responsive full-stack starter for shipping SaaS and AI products faster — auth, admin, CRUD, AI assistant, and guardrails out of the box.
+
+## Live links
+
+| Resource | URL |
+|----------|-----|
+| **Deployed template (app)** | https://vibestack-starter-01.vercel.app/ |
+| **Vibe coding workshop (slides)** | https://presentation-vibestack-starter-01.vercel.app |
+
+**Demo logins** (on the deployed app):
+
+| Role | Email | Password |
+|------|-------|----------|
+| User | `user@vibestack.dev` | `user12345` |
+| Admin | `admin@vibestack.dev` | `admin12345` |
+
+---
 
 ## Stack
-- React, TypeScript, Vite + TanStack Router + Tailwind utility layer
-- Express API + Drizzle ORM + LibSQL/Turso
-- Route-based app shell with protected/admin guards
-- ESLint, Prettier, Vitest, Playwright
 
-## Current Feature Coverage
-- Public pages: landing, pricing, about, contact, privacy, terms, status
-- Auth pages: credential signup/login/logout with backend sessions (`sessions` table)
-- Protected pages: dashboard, profile, settings (DB-backed)
-- Notes workspace: user-scoped saved notes with pin/update/delete workflows (`/notes`)
-- Example CRUD page: create, rename, delete, publish/unpublish (`/items`) via API
-- Admin pages: dashboard, users (including role change), audit logs, settings (persisted), content publish/unpublish
-- AI page: feature-flagged assistant with persisted history (`ai_messages`)
-- AI provider metadata endpoint with configurable provider/model defaults and prompt length policy
-- AI guardrails with prompt-policy blocking and sensitive-token redaction
-- AI provider allow-list policy (`AI_ALLOWED_PROVIDERS`) enforced server-side and reflected in UI
-- AI policy escalation webhook hook for blocked events (`AI_POLICY_WEBHOOK_URL`)
-- UX states: loading, empty, error boundary fallback, toast notifications
-- Shared UI component primitives (`Card`, `Button`, `Input`, `Textarea`, `Select`, `SectionHeader`, `Pill`) used across core modules
-- SEO/public metadata files and core project governance docs
+| Layer | Tech |
+|-------|------|
+| Frontend | React, TypeScript, Vite, TanStack Router, Tailwind |
+| Backend | Express, server functions / handlers |
+| Database | Drizzle ORM + Turso (LibSQL) |
+| Hosting | Vercel |
 
-## Quick Start
+---
+
+## Quick start
+
 ```bash
+git clone https://github.com/sayyidkhan/vibestack-starter-01.git
+cd vibestack-starter-01
 npm install
-npm run dev:full
+cp .env.example .env   # add DATABASE_URL, DATABASE_AUTH_TOKEN, etc.
+npm run dev
 ```
 
-Demo credentials:
-- User: `user@vibestack.dev` / `user12345`
-- Admin: `admin@vibestack.dev` / `admin12345`
+`npm run dev` runs the full stack locally (API + Vite). Default: http://localhost:5174 (or the port Vercel dev assigns).
 
-## Quality Commands
+---
+
+## What’s included
+
+**Public** — landing, pricing, about, contact, privacy, terms, status  
+
+**Auth** — signup, login, logout, session cookies, hashed passwords (scrypt)  
+
+**User (protected)** — dashboard, profile, settings, notes (`/notes`)  
+
+**CRUD example** — items with publish/unpublish (`/items`)  
+
+**Admin** — users (search + role change), audit logs, settings, content, feature flags  
+
+**AI** — feature-flagged assistant with history, provider policy, guardrails  
+
+**UX** — loading/empty/error states, toasts, mobile-first shell with Public / User / Admin nav modes  
+
+---
+
+## Project layout
+
+```
+src/pages/          Route screens
+src/components/     UI + layout (Shell, admin, shared)
+src/lib/            Auth, API client, permissions
+server/services/    Business logic
+server/handlers/    HTTP handlers
+db/                 Schema, migrations, seed
+presentation/       Vibe coding Slidev deck (separate deploy)
+docs/               Architecture, guardrails, PRD, security
+```
+
+---
+
+## Commands
+
 ```bash
-npm run lint
-npm run build
-npm run test
-npm run test:e2e  # includes landing smoke + signup auth flow
+npm run lint          # ESLint
+npm run build         # Production build
+npm run test          # Vitest unit tests
+npm run test:e2e      # Playwright (auth, admin, security)
+npm run db:seed       # Seed Turso with demo users + flags
 ```
 
-## Database Workflow
-1. Set `.env` from `.env.example` with `DATABASE_URL` and `DATABASE_AUTH_TOKEN` if using hosted Turso.
-2. Migrations are in `db/migrations/0001_init.sql` and auto-bootstrapped by API server on startup.
+---
+
+## Environment variables
+
+Copy `.env.example` → `.env`. Minimum for local dev:
+
+- `DATABASE_URL` — Turso/libSQL URL (or `file:local.db` for local SQLite)
+- `DATABASE_AUTH_TOKEN` — Turso token (empty for local file)
+- `SESSION_SECRET` — session signing secret
+- `APP_URL` — e.g. `http://localhost:5174`
+
+See `.env.example` for AI keys and optional tuning (`AI_ENABLED`, rate limits, etc.).
+
+---
+
+## Database
+
+1. Create a [Turso](https://turso.tech) database or use `file:local.db` locally.
+2. API bootstraps migrations on startup (`db/migrations/0001_init.sql`).
 3. Seed demo data:
+
 ```bash
 npm run db:seed
 ```
 
-Optional Drizzle tasks:
+Optional Drizzle CLI:
+
 ```bash
 npm run db:generate
 npm run db:migrate
 ```
 
-## Environment Variables
-Required baseline keys in `.env`:
-- `DATABASE_URL`
-- `DATABASE_AUTH_TOKEN`
-- `SESSION_SECRET`
-- `APP_URL`
-- `AI_ENABLED`
-- `AI_PROVIDER`
-- `OPENAI_API_KEY`
-- `ANTHROPIC_API_KEY`
-- `GEMINI_API_KEY`
+Passwords in the DB are **hashed** (not plain text). Demo accounts use a fixed salt; signups use per-user salts.
 
-## Deployment
-Vercel is the default deployment target.
-- `vercel.json` contains baseline config.
-- Build command: `npm run build`
-- Start local production preview: `npm run preview`
-- Ensure production env vars are configured before first deploy.
+---
+
+## Deployment (Vercel)
+
+**Main app** — root of repo, already wired:
+
+- Build: `npm run build`
+- Output: `dist` + server bundle
+- Config: `vercel.json`
+
+**Presentation slides** — separate Vercel project, root directory `presentation/`:
+
+```bash
+cd presentation
+npm install
+vercel --prod
+```
+
+See [presentation/README.md](./presentation/README.md).
+
+---
+
+## Workshop slides
+
+Eight-slide, hands-on **vibe coding** deck for teaching this template:
+
+- **Live:** https://presentation-vibestack-starter-01.vercel.app
+- **Edit:** `presentation/slides.md`
+- **Present locally:** `cd presentation && npm run dev`
+
+---
 
 ## Documentation
-- Project docs live in `docs/` to keep the repository root focused on runtime and tool configuration.
-- Start with `docs/README.md` for architecture, roadmap, security, contributing, and guardrail links.
 
-## Customizing This Template
-- Replace `src/pages/items.tsx` and related CRUD handlers to map your core domain model.
-- Keep route protection gates in `src/router.tsx` (`Protected`, `AdminOnly`, `FeatureFlagGate`).
-- Extend schema in `db/schema.ts` and migrations in `db/migrations/`.
-- Add/adjust backend behavior in `server/services/*` and route handlers in `server/handlers/*`.
-- Keep docs current when architecture or module boundaries change.
+| Doc | Description |
+|-----|-------------|
+| [docs/README.md](./docs/README.md) | Doc index |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System overview |
+| [docs/GUARDRAILS.md](./docs/GUARDRAILS.md) | Agent & safety rules |
+| [docs/SECURITY.md](./docs/SECURITY.md) | Security notes |
+| [docs/prd.md](./docs/prd.md) | PRD + implementation audit |
 
-## PRD Audit
-- Full live audit trail and evidence matrix: `docs/prd.md` (section `16. Implementation Audit Log`).
+Agent entry points: `AGENTS.md`, `CLAUDE.md`, `.cursorrules`
+
+---
+
+## Customizing the template
+
+1. Replace example CRUD (`src/pages/items.tsx`, `server/services/*`) with your domain.
+2. Keep route guards in `src/router.tsx` (`Protected`, `AdminOnly`, `FeatureFlagGate`).
+3. Extend `db/schema.ts` + add migrations.
+4. Update docs when boundaries change.
+
+---
+
+## PRD & audit
+
+Full product spec and evidence matrix: [docs/prd.md](./docs/prd.md) (section 16 — Implementation Audit Log).
