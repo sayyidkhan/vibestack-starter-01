@@ -1,9 +1,11 @@
-import { Link, useRouterState } from '@tanstack/react-router'
-import { Menu, ShieldCheck, Sparkles, User2, X } from 'lucide-react'
-import { useState } from 'react'
+import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { LogIn, LogOut, Menu, ShieldCheck, Sparkles, User2, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useFeatureFlags } from '../../context/feature-flags'
 import { useAuth } from '../../lib/auth'
-import { Badge, Button } from '../ui/primitives'
+import { LogoutDialog } from '../shared/LogoutDialog'
+import { inferNavMode, NavModeToggle, type NavMode } from './NavModeToggle'
+import { UserMenu } from './UserMenu'
 
 type NavItem = { to: string; label: string; group: 'intro' | 'user' | 'admin' }
 
@@ -15,149 +17,213 @@ const navItems: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', group: 'user' },
   { to: '/profile', label: 'Profile', group: 'user' },
   { to: '/settings', label: 'Settings', group: 'user' },
-  { to: '/admin', label: 'Admin Home', group: 'admin' },
+  { to: '/admin', label: 'Overview', group: 'admin' },
   { to: '/admin/users', label: 'Users', group: 'admin' },
-  { to: '/admin/settings', label: 'Admin Settings', group: 'admin' },
-  { to: '/admin/audit-logs', label: 'Audit Logs', group: 'admin' },
-  { to: '/ai/assistant', label: 'AI Assistant', group: 'admin' },
+  { to: '/admin/settings', label: 'Admin settings', group: 'admin' },
+  { to: '/admin/audit-logs', label: 'Audit logs', group: 'admin' },
+  { to: '/ai/assistant', label: 'AI assistant', group: 'admin' },
 ]
+
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
   const { isEnabled } = useFeatureFlags()
+  const navigate = useNavigate()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [logoutOpen, setLogoutOpen] = useState(false)
+  const [logoutBusy, setLogoutBusy] = useState(false)
+  const [navMode, setNavMode] = useState<NavMode>('public')
+
+  const showUserNav = Boolean(user)
+  const showAdminNav = Boolean(user?.role === 'admin' && isEnabled('ADMIN_PANEL'))
+  const showSettings = isEnabled('USER_SETTINGS')
+
+  async function handleLogout() {
+    setLogoutBusy(true)
+    try {
+      await logout()
+      setLogoutOpen(false)
+      setMobileOpen(false)
+      await navigate({ to: '/' })
+    } finally {
+      setLogoutBusy(false)
+    }
+  }
+
+  function openLogoutDialog() {
+    setMobileOpen(false)
+    setLogoutOpen(true)
+  }
 
   const visibleNav = navItems.filter((item) => {
     if (item.group !== 'intro' && !user) return false
-    if (item.to === '/settings' && !isEnabled('USER_SETTINGS')) return false
+    if (item.to === '/settings' && !showSettings) return false
     if (item.to === '/ai/assistant') {
-      return isEnabled('ADMIN_PANEL') && user?.role === 'admin' && isEnabled('AI_ASSISTANT')
+      return showAdminNav && isEnabled('AI_ASSISTANT')
     }
-    if (item.group === 'admin') return isEnabled('ADMIN_PANEL') && user?.role === 'admin'
+    if (item.group === 'admin') return showAdminNav
     return true
   })
 
-  const grouped = {
-    intro: visibleNav.filter((item) => item.group === 'intro'),
+  const linksByMode = {
+    public: visibleNav.filter((item) => item.group === 'intro'),
     user: visibleNav.filter((item) => item.group === 'user'),
     admin: visibleNav.filter((item) => item.group === 'admin'),
   }
+
+  const activeLinks = user ? linksByMode[navMode] : linksByMode.public
+
+  useEffect(() => {
+    if (!user) {
+      setNavMode('public')
+      return
+    }
+    setNavMode(
+      inferNavMode(pathname, {
+        hasUser: showUserNav,
+        hasAdmin: showAdminNav,
+      }),
+    )
+  }, [pathname, user, showUserNav, showAdminNav])
 
   function isActivePath(to: string) {
     if (to === '/') return pathname === to
     return pathname === to || pathname.startsWith(`${to}/`)
   }
 
+  function renderNavLink(item: NavItem, onNavigate?: () => void) {
+    const isMobile = Boolean(onNavigate)
+    const className = isActivePath(item.to)
+      ? isMobile
+        ? 'mobile-nav-link active'
+        : 'nav-link active'
+      : isMobile
+        ? 'mobile-nav-link'
+        : 'nav-link'
+
+    const icon =
+      item.group === 'intro' ? (
+        <Sparkles size={14} />
+      ) : item.group === 'user' ? (
+        <User2 size={14} />
+      ) : (
+        <ShieldCheck size={14} />
+      )
+
+    if (isMobile) {
+      return (
+        <Link key={item.to} to={item.to} className={className} onClick={onNavigate}>
+          {icon}
+          <span>{item.label}</span>
+        </Link>
+      )
+    }
+
+    return (
+      <Link key={item.to} to={item.to} className={className}>
+        {item.label}
+      </Link>
+    )
+  }
+
   return (
     <div className="app-bg">
-      <header className="topbar">
-        <div className="topbar-main">
-          <div className="topbar-left">
-            <Link to="/" className="brand">
-              <Sparkles size={16} />
-              <span>VibeStack</span>
-            </Link>
-          </div>
-          <div className="topbar-right mobile-actions">
-            <button
-              className="mobile-nav-btn"
-              aria-label={mobileOpen ? 'close menu' : 'open menu'}
-              onClick={() => setMobileOpen((state) => !state)}
-            >
-              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
-            </button>
-          </div>
-        </div>
+      <header className="topbar topbar-unified">
+        <Link to="/" className="brand">
+          <Sparkles size={16} />
+          <span>VibeStack</span>
+        </Link>
 
-        <nav className="desktop-nav clean-nav">
-          <div className="menu-group">
-            <span className="menu-group-label">Public</span>
-            <div className="menu-group-links">
-              {grouped.intro.map((item) => (
-                <Link key={item.to} to={item.to} className={isActivePath(item.to) ? 'nav-link active' : 'nav-link'}>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-          {grouped.user.length > 0 ? (
-            <div className="menu-group">
-              <span className="menu-group-label">Signed In User</span>
-              <div className="menu-group-links">
-                {grouped.user.map((item) => (
-                  <Link key={item.to} to={item.to} className={isActivePath(item.to) ? 'nav-link active' : 'nav-link'}>
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ) : null}
-          {grouped.admin.length > 0 ? (
-            <div className="menu-group">
-              <span className="menu-group-label">Admin</span>
-              <div className="menu-group-links">
-                {grouped.admin.map((item) => (
-                  <Link key={item.to} to={item.to} className={isActivePath(item.to) ? 'nav-link active' : 'nav-link'}>
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ) : null}
-          <div className="desktop-auth">
-            {user ? <Badge tone={user.role === 'admin' ? 'info' : 'neutral'}>{user.role}</Badge> : null}
+        <nav className="topbar-nav desktop-only" aria-label="Main">
+          <div className="nav-shell">
             {user ? (
-              <Button tone="secondary" onClick={async () => logout()}>Logout</Button>
-            ) : (
-              <Link to="/login"><Button tone="secondary">Login</Button></Link>
-            )}
+              <NavModeToggle
+                mode={navMode}
+                showUser={showUserNav}
+                showAdmin={showAdminNav}
+                onChange={setNavMode}
+              />
+            ) : null}
+            <div className="nav-rail" role="tabpanel" aria-label={`${navMode} navigation`}>
+              {activeLinks.map((item) => renderNavLink(item))}
+            </div>
           </div>
         </nav>
+
+        <div className="topbar-actions">
+          {user ? (
+            <div className="desktop-only">
+              <UserMenu user={user} showSettings={showSettings} onSignOut={openLogoutDialog} />
+            </div>
+          ) : (
+            <button type="button" className="nav-link nav-link-action desktop-only" onClick={() => navigate({ to: '/login' })}>
+              <LogIn size={14} aria-hidden />
+              Login
+            </button>
+          )}
+          <button
+            className="mobile-nav-btn mobile-only"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((state) => !state)}
+          >
+            {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+          </button>
+        </div>
       </header>
 
       {mobileOpen ? (
         <div className="mobile-nav-wrap">
-          <nav className="mobile-nav">
-            <p className="menu-group-label">Public</p>
-            {grouped.intro.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={isActivePath(item.to) ? 'mobile-nav-link active' : 'mobile-nav-link'}
-                onClick={() => setMobileOpen(false)}
-              >
-                <Sparkles size={14} />
-                <span>{item.label}</span>
-              </Link>
-            ))}
-            {grouped.user.length > 0 ? <p className="menu-group-label">Signed In User</p> : null}
-            {grouped.user.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={isActivePath(item.to) ? 'mobile-nav-link active' : 'mobile-nav-link'}
-                onClick={() => setMobileOpen(false)}
-              >
-                <User2 size={14} />
-                <span>{item.label}</span>
-              </Link>
-            ))}
-            {grouped.admin.length > 0 ? <p className="menu-group-label">Admin</p> : null}
-            {grouped.admin.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={isActivePath(item.to) ? 'mobile-nav-link active' : 'mobile-nav-link'}
-                onClick={() => setMobileOpen(false)}
-              >
-                <ShieldCheck size={14} />
-                <span>{item.label}</span>
-              </Link>
-            ))}
+          <nav className="mobile-nav" aria-label="Mobile">
+            {user ? (
+              <NavModeToggle
+                mode={navMode}
+                showUser={showUserNav}
+                showAdmin={showAdminNav}
+                onChange={setNavMode}
+              />
+            ) : null}
+            {activeLinks.map((item) => renderNavLink(item, () => setMobileOpen(false)))}
+            <div className="mobile-auth">
+              {user ? (
+                <>
+                  <div className="mobile-user-summary">
+                    <span className="mobile-user-name">{user.name}</span>
+                    <span className="mobile-user-email">{user.email}</span>
+                  </div>
+                  <button type="button" className="mobile-nav-link mobile-nav-link-logout" onClick={openLogoutDialog}>
+                    <LogOut size={14} />
+                    <span>Sign out</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="mobile-nav-link mobile-nav-link-action"
+                  onClick={() => {
+                    setMobileOpen(false)
+                    navigate({ to: '/login' })
+                  }}
+                >
+                  <LogIn size={14} />
+                  <span>Login</span>
+                </button>
+              )}
+            </div>
           </nav>
         </div>
       ) : null}
+
+      <LogoutDialog
+        open={logoutOpen}
+        user={user}
+        busy={logoutBusy}
+        onCancel={() => {
+          if (!logoutBusy) setLogoutOpen(false)
+        }}
+        onConfirm={handleLogout}
+      />
 
       <main className="container">{children}</main>
       <footer className="container footer muted">Designed for high-velocity product execution.</footer>

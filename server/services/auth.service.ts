@@ -1,7 +1,8 @@
 import { and, eq, gt } from 'drizzle-orm'
-import { randomUUID, scryptSync, timingSafeEqual } from 'node:crypto'
+import { randomUUID } from 'node:crypto'
 import { appSettings, roles, sessions, users } from '../../db/schema'
 import { db } from '../db'
+import { hashPassword, verifyPassword } from '../lib/password'
 
 export type SessionUser = {
   userId: string
@@ -32,22 +33,6 @@ export async function issueSession(userId: string) {
 
 export async function revokeSession(sessionId: string) {
   await db.delete(sessions).where(eq(sessions.id, sessionId))
-}
-
-function hashPassword(password: string) {
-  const salt = randomUUID().replace(/-/g, '')
-  const key = scryptSync(password, salt, 64).toString('hex')
-  return `${salt}:${key}`
-}
-
-function verifyPassword(password: string, stored: string | null) {
-  if (!stored) return false
-  const [salt, key] = stored.split(':')
-  if (!salt || !key) return false
-  const next = scryptSync(password, salt, 64)
-  const existing = Buffer.from(key, 'hex')
-  if (existing.length !== next.length) return false
-  return timingSafeEqual(existing, next)
 }
 
 export async function signupWithPassword(input: { name: string; email: string; password: string }) {

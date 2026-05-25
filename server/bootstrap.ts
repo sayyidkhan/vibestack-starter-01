@@ -1,12 +1,27 @@
-import { scryptSync } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { client } from './db'
+import { demoAccounts, hashDemoPassword } from './lib/password'
 
-function hashPassword(password: string) {
-  const salt = 'vibestacksalt'
-  const key = scryptSync(password, salt, 64).toString('hex')
-  return `${salt}:${key}`
+async function ensureDemoAccount(account: (typeof demoAccounts)[number]) {
+  const passwordHash = hashDemoPassword(account.password)
+  const existing = await client.execute({
+    sql: 'SELECT id FROM users WHERE email = ? LIMIT 1',
+    args: [account.email],
+  })
+
+  if (existing.rows[0]) {
+    await client.execute({
+      sql: 'UPDATE users SET name = ?, role_id = ?, password_hash = ? WHERE email = ?',
+      args: [account.name, account.roleId, passwordHash, account.email],
+    })
+    return
+  }
+
+  await client.execute({
+    sql: 'INSERT INTO users (id, email, name, role_id, password_hash) VALUES (?, ?, ?, ?, ?)',
+    args: [account.id, account.email, account.name, account.roleId, passwordHash],
+  })
 }
 
 export async function bootstrapDatabase() {
@@ -30,19 +45,10 @@ export async function bootstrapDatabase() {
 
   await client.execute("INSERT OR IGNORE INTO roles (id, name, description) VALUES ('role-user','user','Default user role')")
   await client.execute("INSERT OR IGNORE INTO roles (id, name, description) VALUES ('role-admin','admin','Admin role')")
-  await client.execute(
-    "INSERT OR IGNORE INTO users (id, email, name, role_id, password_hash) VALUES ('demo-user','user@vibestack.dev','Uma User','role-user', ?)",
-    [hashPassword('user12345')],
-  )
-  await client.execute(
-    "INSERT OR IGNORE INTO users (id, email, name, role_id, password_hash) VALUES ('demo-admin','admin@vibestack.dev','Avery Admin','role-admin', ?)",
-    [hashPassword('admin12345')],
-  )
 
-  await client.execute("UPDATE users SET password_hash = ? WHERE id = 'demo-user'", [hashPassword('user12345')])
-  await client.execute("UPDATE users SET password_hash = ? WHERE id = 'demo-admin'", [hashPassword('admin12345')])
-  await client.execute("UPDATE users SET password_hash = ?, role_id = 'role-user' WHERE email = 'user@vibestack.dev'", [hashPassword('user12345')])
-  await client.execute("UPDATE users SET password_hash = ?, role_id = 'role-admin' WHERE email = 'admin@vibestack.dev'", [hashPassword('admin12345')])
+  for (const account of demoAccounts) {
+    await ensureDemoAccount(account)
+  }
 
   await client.execute("INSERT OR IGNORE INTO app_settings (id, key, value) VALUES ('setting-allow-signup','allow_signup','true')")
   await client.execute("INSERT OR IGNORE INTO app_settings (id, key, value) VALUES ('setting-ai-enabled','ai_enabled','true')")

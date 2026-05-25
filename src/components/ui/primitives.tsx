@@ -4,6 +4,7 @@ import { Badge as ShadcnBadge } from './badge'
 import { Button as ShadcnButton } from './button'
 import { Card as ShadcnCard } from './card'
 import { Input as ShadcnInput } from './input'
+import { PasswordInput as ShadcnPasswordInput } from './password-input'
 import { Select as ShadcnSelect } from './select'
 import { Textarea as ShadcnTextarea } from './textarea'
 
@@ -42,6 +43,10 @@ export function Button({
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return <ShadcnInput {...props} />
+}
+
+export function PasswordInput(props: InputHTMLAttributes<HTMLInputElement>) {
+  return <ShadcnPasswordInput {...props} />
 }
 
 export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {

@@ -75,6 +75,10 @@ Vercel is the default deployment target.
 - Start local production preview: `npm run preview`
 - Ensure production env vars are configured before first deploy.
 
+## Documentation
+- Project docs live in `docs/` to keep the repository root focused on runtime and tool configuration.
+- Start with `docs/README.md` for architecture, roadmap, security, contributing, and guardrail links.
+
 ## Customizing This Template
 - Replace `src/pages/items.tsx` and related CRUD handlers to map your core domain model.
 - Keep route protection gates in `src/router.tsx` (`Protected`, `AdminOnly`, `FeatureFlagGate`).

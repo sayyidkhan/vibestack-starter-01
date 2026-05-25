@@ -262,7 +262,7 @@ This audit maps `docs/prd.md` requirements to current repository evidence.
 ## 38) Legacy Mock Layer Cleanup (May 24, 2026)
 - Removed stale prototype modules under `src/server/*` and `src/services/*` that were no longer part of runtime execution.
 - Canonical backend is now fully represented under `server/*` (services, handlers, bridge, and runtime bootstrap), reducing architecture ambiguity during migration work.
-- Evidence: `ARCHITECTURE.md`, `server/`, removal of `src/server/*.ts` and `src/services/*.ts`
+- Evidence: `docs/ARCHITECTURE.md`, `server/`, removal of `src/server/*.ts` and `src/services/*.ts`
 
 ## 39) Loading Skeleton + Not-Found UX Pass (May 24, 2026)
 - Added richer loading skeleton components for dashboard and profile flows (`DashboardSkeleton`, `ProfileSkeleton`) instead of generic placeholder-only loading.

@@ -149,20 +149,20 @@ The AI system should be easy to replace with:
 
 ## 5. Must-Have Repo Files
 
-### Root Documentation
+### Root and Project Documentation
 
 Generate these files:
 
 ```txt
 README.md
 AGENTS.md
-GUARDRAILS.md
-ARCHITECTURE.md
-PROJECT_VISION.md
-ROADMAP.md
-CHANGELOG.md
-CONTRIBUTING.md
-SECURITY.md
+docs/GUARDRAILS.md
+docs/ARCHITECTURE.md
+docs/PROJECT_VISION.md
+docs/ROADMAP.md
+docs/CHANGELOG.md
+docs/CONTRIBUTING.md
+docs/SECURITY.md
 LICENSE
 .env.example
 .gitignore
@@ -300,16 +300,17 @@ vibestack-os/
 │   │   └── deploy-preview.yml
 │   └── copilot-instructions.md
 ├── AGENTS.md
-├── GUARDRAILS.md
 ├── CLAUDE.md
 ├── GEMINI.md
 ├── CURSOR.md
-├── ARCHITECTURE.md
-├── PROJECT_VISION.md
-├── ROADMAP.md
-├── CONTRIBUTING.md
-├── SECURITY.md
-├── CHANGELOG.md
+├── docs/
+│   ├── GUARDRAILS.md
+│   ├── ARCHITECTURE.md
+│   ├── PROJECT_VISION.md
+│   ├── ROADMAP.md
+│   ├── CONTRIBUTING.md
+│   ├── SECURITY.md
+│   └── CHANGELOG.md
 ├── README.md
 ├── .env.example
 ├── .gitignore
@@ -418,7 +419,7 @@ Should include:
 * How to add features safely
 * Commands to run before finishing
 
-### GUARDRAILS.md
+### docs/GUARDRAILS.md
 
 Should include:
 
@@ -432,7 +433,7 @@ Should include:
 * Always keep mobile responsiveness
 * Always update docs when architecture changes
 
-### ARCHITECTURE.md
+### docs/ARCHITECTURE.md
 
 Should include:
 
@@ -445,7 +446,7 @@ Should include:
 * AI module architecture
 * Deployment architecture
 
-### PROJECT_VISION.md
+### docs/PROJECT_VISION.md
 
 Should include:
 
@@ -454,7 +455,7 @@ Should include:
 * What apps it should help build
 * Long-term direction
 
-### ROADMAP.md
+### docs/ROADMAP.md
 
 Should include:
 
@@ -463,7 +464,7 @@ Should include:
 * v2
 * Future modules
 
-### SECURITY.md
+### docs/SECURITY.md
 
 Should include:
 
@@ -473,7 +474,7 @@ Should include:
 * Auth protection
 * Admin route protection
 
-### CONTRIBUTING.md
+### docs/CONTRIBUTING.md
 
 Should include:
 
@@ -592,16 +593,16 @@ Core requirements:
 25. Seed script.
 26. README and full documentation.
 
-Generate these root documentation files:
+Generate these root and project documentation files:
 - README.md
 - AGENTS.md
-- GUARDRAILS.md
-- ARCHITECTURE.md
-- PROJECT_VISION.md
-- ROADMAP.md
-- CHANGELOG.md
-- CONTRIBUTING.md
-- SECURITY.md
+- docs/GUARDRAILS.md
+- docs/ARCHITECTURE.md
+- docs/PROJECT_VISION.md
+- docs/ROADMAP.md
+- docs/CHANGELOG.md
+- docs/CONTRIBUTING.md
+- docs/SECURITY.md
 - LICENSE
 - .env.example
 - .gitignore
@@ -681,12 +682,12 @@ User requirements:
 Documentation requirements:
 README.md should explain setup, development, database, environment variables, testing, and deployment.
 AGENTS.md should instruct AI coding agents how to work safely in this repo.
-GUARDRAILS.md should define safety and quality rules.
-ARCHITECTURE.md should explain frontend, backend, database, auth, admin, AI, and deployment architecture.
-PROJECT_VISION.md should explain why this starter exists and what it is meant to help build.
-ROADMAP.md should include MVP, v1, v2, and future modules.
-SECURITY.md should explain secret management, auth protection, and vulnerability reporting.
-CONTRIBUTING.md should explain local setup, branch rules, PR rules, and testing expectations.
+docs/GUARDRAILS.md should define safety and quality rules.
+docs/ARCHITECTURE.md should explain frontend, backend, database, auth, admin, AI, and deployment architecture.
+docs/PROJECT_VISION.md should explain why this starter exists and what it is meant to help build.
+docs/ROADMAP.md should include MVP, v1, v2, and future modules.
+docs/SECURITY.md should explain secret management, auth protection, and vulnerability reporting.
+docs/CONTRIBUTING.md should explain local setup, branch rules, PR rules, and testing expectations.
 
 UX requirements:
 - Clean modern interface.
@@ -723,7 +724,7 @@ The template is successful if a builder can:
 7. Login as user/admin.
 8. Deploy to Vercel.
 9. Replace the example CRUD feature with a real app idea.
-10. Use AGENTS.md and GUARDRAILS.md to guide AI coding agents safely.
+10. Use AGENTS.md and docs/GUARDRAILS.md to guide AI coding agents safely.
 
 ## 14. Future Expansion Ideas
 
@@ -846,11 +847,11 @@ Matrix:
 
 9) Replace the example CRUD feature with a real app idea.
 - Status: verified
-- Evidence: modular boundaries documented in `ARCHITECTURE.md`; feature flag and route isolation shown by `tests/feature-flags.spec.ts` (`EXAMPLE_CRUD` gate).
+- Evidence: modular boundaries documented in `docs/ARCHITECTURE.md`; feature flag and route isolation shown by `tests/feature-flags.spec.ts` (`EXAMPLE_CRUD` gate).
 
-10) Use AGENTS.md and GUARDRAILS.md to guide AI coding agents safely.
+10) Use AGENTS.md and docs/GUARDRAILS.md to guide AI coding agents safely.
 - Status: verified
-- Evidence: `AGENTS.md` and `GUARDRAILS.md` present with workflow/safety instructions.
+- Evidence: `AGENTS.md` and `docs/GUARDRAILS.md` present with workflow/safety instructions.
 
 ### 60. Dashboard Trend Visuals and Metric Readability (2026-05-24)
 
@@ -899,7 +900,7 @@ Matrix:
   - Evidence: `package.json` name/version and repository docs consistently reference VibeStack OS.
 
 - Section 2 (Core Idea): verified.
-  - Evidence: public pages and docs position this as reusable starter (`README.md`, `PROJECT_VISION.md`, `src/pages/pages.tsx`).
+  - Evidence: public pages and docs position this as reusable starter (`README.md`, `docs/PROJECT_VISION.md`, `src/pages/pages.tsx`).
 
 - Section 3 (Tech Stack): verified.
   - Evidence: React/TypeScript/Tailwind/Vitest/Playwright/ESLint/Prettier/Turso+Drizzle/Vercel config are present in `package.json`, `db/*`, `vercel.json`.
@@ -914,7 +915,7 @@ Matrix:
     - E2E coverage in `tests/*.spec.ts`
 
 - Section 5 (Must-Have Repo Files): verified.
-  - Evidence: required root docs, agent files, SEO/metadata files, quality files, CI/CD files, and DB files present in repository paths listed in sections `5.x`.
+  - Evidence: required root/project docs, agent files, SEO/metadata files, quality files, CI/CD files, and DB files present in repository paths listed in sections `5.x`.
 
 - Section 6 (Suggested Folder Structure): verified.
   - Evidence: equivalent modular structure implemented with `src/pages`, `src/components`, `src/lib`, root-level `server`, and `db`.
@@ -924,7 +925,7 @@ Matrix:
   - Evidence: required tables exist in `db/schema.ts` and `db/migrations/0001_init.sql` (plus extra supporting tables for notes/rate-limit).
 
 - Section 8 (Required Documentation Content): verified.
-  - Evidence: `README.md`, `AGENTS.md`, `GUARDRAILS.md`, `ARCHITECTURE.md`, `PROJECT_VISION.md`, `ROADMAP.md`, `SECURITY.md`, `CONTRIBUTING.md` each contain required topic coverage.
+  - Evidence: `README.md`, `AGENTS.md`, `docs/GUARDRAILS.md`, `docs/ARCHITECTURE.md`, `docs/PROJECT_VISION.md`, `docs/ROADMAP.md`, `docs/SECURITY.md`, `docs/CONTRIBUTING.md` each contain required topic coverage.
 
 - Section 9 (UX Requirements): verified.
   - Evidence:

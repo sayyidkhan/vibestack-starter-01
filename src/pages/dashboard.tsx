@@ -53,7 +53,7 @@ export function DashboardPage() {
   if (!data) return <DashboardSkeleton />
 
   return (
-    <>
+    <div className="page-stack">
       <Card tone="spotlight">
         <SectionHeader eyebrow="User Section" title="Execution Dashboard" pill="Daily control center" />
         <p className="muted">Track output, close loops quickly, and move the backlog with intent.</p>
@@ -102,6 +102,6 @@ export function DashboardPage() {
       ) : (
         <EmptyState title="No activity yet" description="Actions and system events will appear here." />
       )}
-    </>
+    </div>
   )
 }

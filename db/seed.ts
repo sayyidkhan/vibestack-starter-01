@@ -1,20 +1,14 @@
 import 'dotenv/config'
 import { createClient } from '@libsql/client'
 import { randomUUID } from 'node:crypto'
-import { scryptSync } from 'node:crypto'
 import { drizzle } from 'drizzle-orm/libsql'
+import { demoAccounts, hashDemoPassword } from '../server/lib/password'
 import { appSettings, exampleItems, featureFlags, roles, users } from './schema'
 
 function requiredEnv(name: 'DATABASE_URL' | 'DATABASE_AUTH_TOKEN') {
   const value = process.env[name]
   if (!value) throw new Error(`Missing ${name}`)
   return value
-}
-
-function hashPassword(password: string) {
-  const salt = 'vibestacksalt'
-  const key = scryptSync(password, salt, 64).toString('hex')
-  return `${salt}:${key}`
 }
 
 export async function seed() {
@@ -24,20 +18,23 @@ export async function seed() {
   })
   const db = drizzle(client)
 
-  const userRoleId = randomUUID()
-  const adminRoleId = randomUUID()
-  const userId = randomUUID()
-  const adminId = randomUUID()
-
   await db.insert(roles).values([
-    { id: userRoleId, name: 'user', description: 'Default member role' },
-    { id: adminRoleId, name: 'admin', description: 'Administrator role' },
-  ])
+    { id: 'role-user', name: 'user', description: 'Default member role' },
+    { id: 'role-admin', name: 'admin', description: 'Administrator role' },
+  ]).onConflictDoNothing()
 
-  await db.insert(users).values([
-    { id: userId, email: 'user@vibestack.dev', name: 'Uma User', roleId: userRoleId, passwordHash: hashPassword('user12345') },
-    { id: adminId, email: 'admin@vibestack.dev', name: 'Avery Admin', roleId: adminRoleId, passwordHash: hashPassword('admin12345') },
-  ])
+  await db.insert(users).values(
+    demoAccounts.map((account) => ({
+      id: account.id,
+      email: account.email,
+      name: account.name,
+      roleId: account.roleId,
+      passwordHash: hashDemoPassword(account.password),
+    })),
+  ).onConflictDoNothing()
+
+  const userId = 'demo-user'
+  const adminId = 'demo-admin'
 
   await db.insert(featureFlags).values([
     { id: randomUUID(), key: 'AI_ASSISTANT', enabled: true, description: 'Enable AI assistant module' },

@@ -1,1 +1,1 @@
-Follow AGENTS.md and GUARDRAILS.md. Prioritize type safety, route protection, and mobile responsiveness.
+Follow AGENTS.md and docs/GUARDRAILS.md. Prioritize type safety, route protection, and mobile responsiveness.
